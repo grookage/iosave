@@ -230,11 +230,9 @@
     <junit.version>4.13.2</junit.version>
     <lombok.version>1.18.24</lombok.version>
     <mockito.version>4.5.1</mockito.version>
-
     <!--Jacoco properties-->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <reflections.version>0.10.2</reflections.version>
-
     <!--Sonar properties-->
     <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     <sonar.organization>grookage</sonar.organization>
