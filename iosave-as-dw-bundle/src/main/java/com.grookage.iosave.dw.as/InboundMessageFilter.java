@@ -28,7 +28,6 @@ import com.grookage.iosave.core.utils.RequestUtils;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -88,13 +87,17 @@ public class InboundMessageFilter implements ContainerRequestFilter, ContainerRe
     }
   }
 
-  private String getTraceId(final ContainerRequestContext requestContext, Inbound inbound){
-    if(null == inbound.traceId()) return "TXN-" + UUID.randomUUID();
+  private String getTraceId(final ContainerRequestContext requestContext, Inbound inbound) {
+    if (null == inbound.traceId()) {
+      return "TXN-" + UUID.randomUUID();
+    }
     return requestContext.getHeaderString(inbound.traceId());
   }
 
-  private String getRequestId(ContainerRequestContext requestContext, Inbound inbound){
-    if(null == inbound.requestId()) return null;
+  private String getRequestId(ContainerRequestContext requestContext, Inbound inbound) {
+    if (null == inbound.requestId()) {
+      return null;
+    }
     return requestContext.getHeaderString(inbound.requestId());
   }
 
@@ -106,7 +109,7 @@ public class InboundMessageFilter implements ContainerRequestFilter, ContainerRe
     return inbound.saveRequestBody();
   }
 
-  private Optional<Inbound> getInbound(){
+  private Optional<Inbound> getInbound() {
     final var resourceMethod = resourceInfo.getResourceMethod();
     return null == resourceMethod ? Optional.empty() : Optional.ofNullable(
         resourceMethod.getAnnotation(Inbound.class)
@@ -150,7 +153,9 @@ public class InboundMessageFilter implements ContainerRequestFilter, ContainerRe
   @Override
   public void filter(final ContainerRequestContext requestContext) {
     final var inbound = getInbound().orElse(null);
-    if(null == inbound) return;
+    if (null == inbound) {
+      return;
+    }
     final boolean saveRequestBody = shouldSaveBody(inbound);
     final boolean mandateRequestId = mandateRequestId(inbound);
     final var requestId = getRequestId(requestContext, inbound);
@@ -193,7 +198,9 @@ public class InboundMessageFilter implements ContainerRequestFilter, ContainerRe
   public void filter(final ContainerRequestContext requestContext,
       final ContainerResponseContext responseContext) {
     final var inbound = getInbound().orElse(null);
-    if(null == inbound) return;
+    if (null == inbound) {
+      return;
+    }
     final boolean saveRequestBody = shouldSaveBody(inbound);
     final var requestId = getRequestId(requestContext, inbound);
     final var loggingEnabled = requestContext.getHeaderString(

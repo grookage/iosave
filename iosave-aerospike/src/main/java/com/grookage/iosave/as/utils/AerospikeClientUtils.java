@@ -34,7 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class AerospikeClientUtils {
 
-  public static IAerospikeClient provideIAerospikeClient(IOSaveAerospikeConfig config){
+  public static IAerospikeClient provideIAerospikeClient(IOSaveAerospikeConfig config) {
     log.info("Starting Aerospike client");
 
     final var readPolicy = new Policy();

@@ -1,21 +1,23 @@
 # iosave [![Build](https://github.com/grookage/iosave/actions/workflows/build.yml/badge.svg)](https://github.com/grookage/iosave/actions/workflows/build.yml)
 
-
 > A flow of words is a surge sign of duplicity
 > - by Honore de Balzac
 
 ### Maven Dependency
 
 Use the following maven dependency:
+
 ```xml
+
 <dependency>
-    <groupId>com.grookage.apps</groupId>
-    <artifactId>iosave</artifactId>
-    <version>0.0.1</version>
+  <groupId>com.grookage.apps</groupId>
+  <artifactId>iosave</artifactId>
+  <version>0.0.1</version>
 </dependency>
 ```
 
 ### Build instructions
+
 - Clone the source:
 
       git clone github.com/grookage/iosave
@@ -24,14 +26,16 @@ Use the following maven dependency:
 
       mvn install
 
-
 IOSave provides the following capabilities
-- Helps you prevent you sending duplicate requests on a server when an existing one with the same ID is pending
-- Configurable headers to select your own requestId header
-- Annotation based processing of selectively applying the same filter. 
 
-IOSave is built as a dropwizard bundle, using aerospike as a repository, to demonstrate it at work on a server, you'll need guice along with dropwizard to include it. 
-You can also extend the iosave-core and write your own repository and binding.
+- Helps you prevent you sending duplicate requests on a server when an existing one with the same ID
+  is pending
+- Configurable headers to select your own requestId header
+- Annotation based processing of selectively applying the same filter.
+
+IOSave is built as a dropwizard bundle, using aerospike as a repository, to demonstrate it at work
+on a server, you'll need guice along with dropwizard to include it. You can also extend the
+iosave-core and write your own repository and binding.
 
 ### Tech
 
@@ -42,7 +46,7 @@ QTrouper uses rabbitMQ as its backend interface and the
 
 ### Example
 
-##Sample Configuration
+## Sample Configuration
 
 ```
 name: example
@@ -131,17 +135,15 @@ LICENSE
 
 Copyright 2022 Koushik R <rkoushik.14@gmail.com>.
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
+compliance with the License. You may obtain a copy of the License at
 
 http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+Unless required by applicable law or agreed to in writing, software distributed under the License is
+distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+implied. See the License for the specific language governing permissions and limitations under the
+License.
 
 
   

@@ -27,6 +27,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AerospikeHost {
+
   @NotEmpty
   private String host;
   @Min(1)

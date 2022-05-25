@@ -31,6 +31,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class AppConfiguration extends Configuration {
+
   @NotEmpty
   private String name;
   @NotNull

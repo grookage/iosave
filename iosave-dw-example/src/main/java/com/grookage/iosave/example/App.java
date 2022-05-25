@@ -32,7 +32,7 @@ public class App extends Application<AppConfiguration> {
     new App().run(args);
   }
 
-  public void initialize(Bootstrap<AppConfiguration> bootstrap){
+  public void initialize(Bootstrap<AppConfiguration> bootstrap) {
     bootstrap.addBundle(GuiceBundle.builder()
         .enableAutoConfig(getClass().getPackage().getName())
         .build(Stage.PRODUCTION));

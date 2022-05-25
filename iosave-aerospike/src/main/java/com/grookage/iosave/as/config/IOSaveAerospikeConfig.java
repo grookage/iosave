@@ -27,6 +27,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class IOSaveAerospikeConfig {
+
   @NotEmpty
   private List<AerospikeHost> hosts;
   private String namespace;
