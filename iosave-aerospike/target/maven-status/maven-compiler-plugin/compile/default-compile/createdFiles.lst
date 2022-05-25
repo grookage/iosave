@@ -1,9 +1,0 @@
-com/grookage/iosave/as/config/IOSaveAerospikeConfig$IOSaveAerospikeConfigBuilder.class
-com/grookage/iosave/as/config/IOSaveAerospikeConfig.class
-com/grookage/iosave/as/client/AerospikeClient.class
-com/grookage/iosave/as/repository/ASRequestRepository$ASRequestRepositoryBuilder.class
-com/grookage/iosave/as/repository/ASRequestRepository.class
-com/grookage/iosave/as/config/AerospikeHost.class
-com/grookage/iosave/as/utils/CompressionUtils.class
-com/grookage/iosave/as/utils/AerospikeClientUtils.class
-com/grookage/iosave/as/client/AerospikeClient$AerospikeClientBuilder.class

@@ -20,7 +20,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.inject.Stage;
 import com.grookage.iosave.as.config.IOSaveAerospikeConfig;
-import com.grookage.iosave.dw.as.IOSaveBundle;
+import com.grookage.iosave.bundle.IOSaveBundle;
 import io.dropwizard.Application;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;

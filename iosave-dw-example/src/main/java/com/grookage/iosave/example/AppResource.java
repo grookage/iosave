@@ -17,7 +17,7 @@ package com.grookage.iosave.example;
 
 import com.codahale.metrics.annotation.ExceptionMetered;
 import com.codahale.metrics.annotation.Timed;
-import com.grookage.iosave.dw.as.Inbound;
+import com.grookage.iosave.bundle.Inbound;
 import java.util.Map;
 import javax.inject.Singleton;
 import javax.ws.rs.Consumes;

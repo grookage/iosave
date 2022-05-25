@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.grookage.iosave.dw.as;
+package com.grookage.iosave.bundle;
 
 import com.codahale.metrics.health.HealthCheck;
 import com.grookage.iosave.as.client.AerospikeClient;
