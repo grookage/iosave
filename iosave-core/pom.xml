@@ -16,7 +16,7 @@
   <parent>
     <artifactId>iosave</artifactId>
     <groupId>com.grookage.apps</groupId>
-    <version>0.0.1</version>
+    <version>0.0.1-SNAPSHOT</version>
   </parent>
 
 </project>
