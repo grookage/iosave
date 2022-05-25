@@ -34,7 +34,7 @@
   <parent>
     <artifactId>iosave</artifactId>
     <groupId>com.grookage.apps</groupId>
-    <version>1.0.2-SNAPSHOT</version>
+    <version>1.0.2</version>
   </parent>
   <properties>
     <aerospike.version>4.4.1</aerospike.version>
