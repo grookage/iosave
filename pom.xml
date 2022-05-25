@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <artifactId>iosave</artifactId>
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <forceJavacCompilerUse>true</forceJavacCompilerUse>
+          <release>11</release>
+          <source>11</source>
+          <target>11</target>
+        </configuration>
+        <dependencies>
+          <dependency>
+            <artifactId>asm</artifactId>
+            <groupId>org.ow2.asm</groupId>
+            <version>7.2</version>
+          </dependency>
+        </dependencies>
+        <groupId>org.apache.maven.plugins</groupId>
+        <version>3.8.1</version>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>test</goal>
+            </goals>
+            <id>test</id>
+            <phase>test</phase>
+          </execution>
+        </executions>
+        <version>2.19.1</version>
+      </plugin>
+
+      <plugin>
+        <artifactId>findbugs-maven-plugin</artifactId>
+        <groupId>org.codehaus.mojo</groupId>
+        <version>3.0.3</version>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-source-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+            <id>attach-sources</id>
+          </execution>
+        </executions>
+        <groupId>org.apache.maven.plugins</groupId>
+        <version>3.2.0</version>
+      </plugin>
+    </plugins>
+  </build>
+  <dependencies>
+    <dependency>
+      <artifactId>lombok</artifactId>
+      <groupId>org.projectlombok</groupId>
+      <scope>provided</scope>
+      <version>${lombok.version}</version>
+    </dependency>
+    <dependency>
+      <artifactId>junit</artifactId>
+      <groupId>junit</groupId>
+      <scope>test</scope>
+      <version>${junit.version}</version>
+    </dependency>
+    <dependency>
+      <artifactId>mockito-core</artifactId>
+      <groupId>org.mockito</groupId>
+      <scope>test</scope>
+      <version>${mockito.version}</version>
+    </dependency>
+    <dependency>
+      <artifactId>jackson-databind</artifactId>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <scope>test</scope>
+      <version>${jackson.version}</version>
+    </dependency>
+    <dependency>
+      <artifactId>reflections</artifactId>
+      <groupId>org.reflections</groupId>
+      <version>${reflections.version}</version>
+    </dependency>
+
+  </dependencies>
+  <description>A simple dropwizard bundle to annotate resources with to save request/response
+    data.
+  </description>
+  <developers>
+    <developer>
+      <email>rkoushik.14@gmail.com</email>
+      <id>koushikr</id>
+      <name>Koushik Ramachandra</name>
+      <roles>
+        <role>owner</role>
+        <role>developer</role>
+      </roles>
+    </developer>
+  </developers>
+  <distributionManagement>
+    <repository>
+      <id>ossrh</id>
+      <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+    </repository>
+    <snapshotRepository>
+      <id>ossrh</id>
+      <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+    </snapshotRepository>
+  </distributionManagement>
+
+  <groupId>com.grookage.apps</groupId>
+  <inceptionYear>2015</inceptionYear>
+  <issueManagement>
+    <system>GitHub Issues</system>
+    <url>https://github.com/grookage/iosave/issues</url>
+  </issueManagement>
+  <licenses>
+    <license>
+      <comments>A business-friendly OSS license</comments>
+      <distribution>repo</distribution>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+    </license>
+  </licenses>
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <modules>
+    <module>iosave-core</module>
+    <module>iosave-aerospike</module>
+    <module>iosave-as-dw-bundle</module>
+    <module>iosave-dw-example</module>
+  </modules>
+
+  <name>iosave</name>
+
+  <packaging>pom</packaging>
+
+  <profiles>
+    <profile>
+      <activation>
+        <property>
+          <name>release</name>
+          <value>true</value>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>nexus-staging-maven-plugin</artifactId>
+            <configuration>
+              <autoReleaseAfterClose>true</autoReleaseAfterClose>
+              <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
+              <serverId>ossrh</serverId>
+            </configuration>
+            <extensions>true</extensions>
+            <groupId>org.sonatype.plugins</groupId>
+            <version>1.6.7</version>
+          </plugin>
+          <plugin>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <executions>
+              <execution>
+                <configuration>
+                  <executable>gpg</executable>
+                  <useAgent>true</useAgent>
+                </configuration>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+              </execution>
+            </executions>
+            <groupId>org.apache.maven.plugins</groupId>
+            <version>1.6</version>
+          </plugin>
+          <plugin>
+            <artifactId>maven-enforcer-plugin</artifactId>
+            <executions>
+              <execution>
+                <configuration>
+                  <fail>true</fail>
+                  <rules>
+                    <requireReleaseDeps>
+                      <message>No Snapshots Allowed!</message>
+                    </requireReleaseDeps>
+                  </rules>
+                </configuration>
+                <goals>
+                  <goal>enforce</goal>
+                </goals>
+                <id>enforce-no-snapshots</id>
+              </execution>
+            </executions>
+            <groupId>org.apache.maven.plugins</groupId>
+            <version>3.0.0-M2</version>
+          </plugin>
+          <plugin>
+            <artifactId>maven-release-plugin</artifactId>
+            <configuration>
+              <autoVersionSubmodules>true</autoVersionSubmodules>
+              <goals>deploy</goals>
+              <releaseProfiles>release</releaseProfiles>
+              <useReleaseProfile>false</useReleaseProfile>
+            </configuration>
+            <groupId>org.apache.maven.plugins</groupId>
+            <version>2.5.3</version>
+          </plugin>
+        </plugins>
+      </build>
+      <id>release</id>
+    </profile>
+  </profiles>
+
+  <properties>
+    <cglib.version>3.2.5</cglib.version>
+    <guava.version>23.0</guava.version>
+    <jackson.version>2.13.3</jackson.version>
+    <jacoco.reportPath>${project.basedir}/../target/jacoco.exec</jacoco.reportPath>
+    <jacoco.version>0.8.0</jacoco.version>
+    <junit.version>4.13.2</junit.version>
+    <lombok.version>1.18.24</lombok.version>
+    <mockito.version>4.5.1</mockito.version>
+
+    <!--Jacoco properties-->
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <reflections.version>0.10.2</reflections.version>
+
+    <!--Sonar properties-->
+    <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+    <sonar.organization>grookage</sonar.organization>
+  </properties>
+
+  <scm>
+    <connection>scm:git:https://github.com/grookage/iosave.git</connection>
+    <developerConnection>scm:git:https://github.com/grookage/iosave.git</developerConnection>
+    <tag>HEAD</tag>
+    <url>https://github.com/grookage/iosave.git</url>
+  </scm>
+
+  <url>https://github.com/grookage/iosave</url>
+
+  <version>0.0.1</version>
+
+</project>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <artifactId>iosave-as-dw-bundle</artifactId>
+  <dependencies>
+    <dependency>
+      <artifactId>jackson-databind</artifactId>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <version>${jackson.version}</version>
+    </dependency>
+    <dependency>
+      <artifactId>dropwizard-core</artifactId>
+      <groupId>io.dropwizard</groupId>
+      <scope>provided</scope>
+      <version>${dropwizard.version}</version>
+    </dependency>
+    <dependency>
+      <artifactId>iosave-core</artifactId>
+      <groupId>com.grookage.apps</groupId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <artifactId>iosave-aerospike</artifactId>
+      <groupId>com.grookage.apps</groupId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <artifactId>iosave</artifactId>
+    <groupId>com.grookage.apps</groupId>
+    <version>0.0.1</version>
+  </parent>
+
+  <properties>
+    <dropwizard.version>2.1.0</dropwizard.version>
+  </properties>
+
+</project>

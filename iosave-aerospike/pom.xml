@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <artifactId>iosave-aerospike</artifactId>
+  <dependencies>
+    <dependency>
+      <artifactId>jackson-databind</artifactId>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <version>${jackson.version}</version>
+    </dependency>
+
+    <dependency>
+      <artifactId>iosave-core</artifactId>
+      <groupId>com.grookage.apps</groupId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <!-- Aerospike -->
+    <dependency>
+      <artifactId>aerospike-client</artifactId>
+      <groupId>com.aerospike</groupId>
+      <version>${aerospike.version}</version>
+    </dependency>
+
+    <dependency>
+      <artifactId>validation-api</artifactId>
+      <groupId>javax.validation</groupId>
+      <version>2.0.1.Final</version>
+    </dependency>
+  </dependencies>
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <artifactId>iosave</artifactId>
+    <groupId>com.grookage.apps</groupId>
+    <version>0.0.1</version>
+  </parent>
+
+  <properties>
+    <aerospike.version>4.4.1</aerospike.version>
+  </properties>
+
+</project>
