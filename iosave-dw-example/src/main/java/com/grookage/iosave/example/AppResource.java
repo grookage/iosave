@@ -17,9 +17,13 @@ package com.grookage.iosave.example;
 
 import com.codahale.metrics.annotation.ExceptionMetered;
 import com.codahale.metrics.annotation.Timed;
-import com.grookage.iosave.bundle.Inbound;
+import com.grookage.iosave.bundle.annotations.CustomInbound;
+import com.grookage.iosave.bundle.annotations.Inbound;
+import com.grookage.iosave.bundle.annotations.RequestBody;
+import com.grookage.iosave.example.entities.SampleCustomInboundRequest;
 import java.util.Map;
 import javax.inject.Singleton;
+import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -47,4 +51,15 @@ public class AppResource {
   public Response testResponse() {
     return Response.status(200).entity(Map.of("status", "ok")).build();
   }
+
+  @Path("/test/custom/inbound")
+  @POST
+  @ExceptionMetered
+  @Timed
+  @CustomInbound(saveRequestBody = true)
+  public Response testCustomInboundResponse(
+      @RequestBody @Valid SampleCustomInboundRequest request) {
+    return Response.status(200).entity(Map.of("status", "ok")).build();
+  }
+
 }

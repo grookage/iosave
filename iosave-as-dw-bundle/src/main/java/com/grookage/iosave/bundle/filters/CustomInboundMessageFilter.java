@@ -1,23 +1,10 @@
-/*
- * Copyright 2022 Koushik R <rkoushik.14@gmail.com>.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-package com.grookage.iosave.bundle;
+package com.grookage.iosave.bundle.filters;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.grookage.iosave.as.repository.ASRequestRepository;
+import com.grookage.iosave.bundle.annotations.CustomInbound;
+import com.grookage.iosave.bundle.interfaces.CustomInboundRequest;
 import com.grookage.iosave.core.entities.RequestEntity;
 import com.grookage.iosave.core.entities.RequestHeaders;
 import com.grookage.iosave.core.entities.RequestStatus;
@@ -31,16 +18,12 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import javax.inject.Singleton;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.container.ContainerResponseFilter;
-import javax.ws.rs.container.ResourceInfo;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import lombok.Builder;
 import lombok.Setter;
@@ -50,119 +33,38 @@ import org.glassfish.jersey.message.internal.ReaderWriter;
 import org.glassfish.jersey.server.ContainerException;
 import org.glassfish.jersey.server.internal.process.MappableException;
 
-@Singleton
 @Slf4j
 @Setter
-@Inbound
-public class InboundMessageFilter implements ContainerRequestFilter, ContainerResponseFilter {
+public class CustomInboundMessageFilter<T extends CustomInboundRequest> implements
+    ContainerRequestFilter, ContainerResponseFilter {
 
   private final RequestReceiverService requestReceiverService;
   private final ObjectMapper mapper;
-  @Context
-  private ResourceInfo resourceInfo;
+  private final Class<T> requestBodyClass;
+  private final CustomInbound customInbound;
 
   @Builder
-  public InboundMessageFilter(
+  public CustomInboundMessageFilter(
       final ASRequestRepository messageRepository,
-      final ObjectMapper mapper
-  ) {
+      final ObjectMapper mapper,
+      Class<T> requestBodyClass,
+      CustomInbound customInbound) {
     this.requestReceiverService = new RequestReceiverService(messageRepository);
     this.mapper = mapper;
+    this.requestBodyClass = requestBodyClass;
+    this.customInbound = customInbound;
   }
 
-  private static String readFromRequest(ContainerRequestContext request) {
-    final var out = new ByteArrayOutputStream();
-    final var in = request.getEntityStream();
-    byte[] requestEntity = new byte[0];
-    try {
-      if (in.available() > 0) {
-        ReaderWriter.writeTo(in, out);
-        requestEntity = out.toByteArray();
-        request.setEntityStream(
-            new ByteArrayInputStream(requestEntity));  //Write back so that it gets consumed later
-      }
-      return new String(requestEntity);
-    } catch (IOException ex) {
-      throw new ContainerException(ex);
-    }
-  }
-
-  private String getTraceId(final ContainerRequestContext requestContext, Inbound inbound) {
-    if (null == inbound.traceId()) {
-      return "TXN-" + UUID.randomUUID();
-    }
-    return requestContext.getHeaderString(inbound.traceId());
-  }
-
-  private String getRequestId(ContainerRequestContext requestContext, Inbound inbound) {
-    if (null == inbound.requestId()) {
-      return null;
-    }
-    return requestContext.getHeaderString(inbound.requestId());
-  }
-
-  private boolean mandateRequestId(Inbound inbound) {
-    return inbound.mandateRequestId();
-  }
-
-  private boolean shouldSaveBody(Inbound inbound) {
-    return inbound.saveRequestBody();
-  }
-
-  private Optional<Inbound> getInbound() {
-    final var resourceMethod = resourceInfo.getResourceMethod();
-    return null == resourceMethod ? Optional.empty() : Optional.ofNullable(
-        resourceMethod.getAnnotation(Inbound.class)
-    );
-  }
-
-  @SneakyThrows
-  private void handleProcessedMessage(final RequestEntity message) {
-    HashMap<String, String> responseHeaders = new HashMap<>();
-    if (message.getResponseHeaders() != null) {
-      try {
-        responseHeaders = mapper.readValue(message.getResponseHeaders(), new TypeReference<>() {
-        });
-      } catch (final Exception e) {
-        log.error("Unable to parse response headers with value {}.", message.getResponseHeaders());
-      }
-    }
-    final var builder = Response
-        .status(Response.Status.fromStatusCode(message.getResponseStatus()))
-        .entity(message.getResponseBody());
-    responseHeaders.forEach(builder::header);
-    //If message already processed, return
-    throw IOSaveException.error(IOSaveException.ErrorCode.MESSAGE_ALREADY_PROCESSED);
-  }
-
-  @SneakyThrows
-  private String readFromResponse(ContainerResponseContext response) {
-    final var entity = response.getEntity();
-    try {
-      return mapper.writeValueAsString(entity);   //Deserialize anyway
-    } catch (IOSaveException e) {
-      return entity.toString();
-    }
-  }
-
-  private String getRequestBody(ContainerRequestContext context, RequestEntity requestEntity) {
-    return Objects.isNull(requestEntity) ? readFromRequest(context)
-        : requestEntity.getRequestBody();
-  }
 
   @Override
-  public void filter(final ContainerRequestContext requestContext) {
-    final var inbound = getInbound().orElse(null);
-    if (null == inbound) {
-      return;
-    }
-    final boolean saveRequestBody = shouldSaveBody(inbound);
-    final boolean mandateRequestId = mandateRequestId(inbound);
-    final var requestId = getRequestId(requestContext, inbound);
-    if (mandateRequestId && null == requestId) {
+  public void filter(ContainerRequestContext requestContext) {
+    final boolean saveRequestBody = shouldSaveBody();
+    final var requestBody = getRequestBody(requestContext, null);
+    final var requestId = extractRequestIdFromRequestBody(requestBody);
+    if (null == requestId) {
       throw IOSaveException.error(IOSaveException.ErrorCode.MESSAGE_UNPROCESSED);
     }
-    final var traceId = getTraceId(requestContext, inbound);
+    final var traceId = getTraceId(requestContext);
     final var loggingEnabled = requestContext.getHeaderString(
         RequestHeaders.LOGGING_ENABLED.getHeaderName()
     );
@@ -193,21 +95,19 @@ public class InboundMessageFilter implements ContainerRequestFilter, ContainerRe
     }
   }
 
+
   @Override
-  @SneakyThrows
-  public void filter(final ContainerRequestContext requestContext,
-      final ContainerResponseContext responseContext) {
-    final var inbound = getInbound().orElse(null);
-    if (null == inbound) {
-      return;
-    }
-    final boolean saveRequestBody = shouldSaveBody(inbound);
-    final var requestId = getRequestId(requestContext, inbound);
+  public void filter(ContainerRequestContext requestContext,
+      ContainerResponseContext responseContext) {
+
+    final boolean saveRequestBody = shouldSaveBody();
+    final var inboundMessage = RequestManager.getCurrentMessage();
+    final var requestBody = getRequestBody(requestContext, inboundMessage);
+    final var requestId = extractRequestIdFromRequestBody(requestBody);
     final var loggingEnabled = requestContext.getHeaderString(
         RequestHeaders.LOGGING_ENABLED.getHeaderName());
-    final var traceId = getTraceId(requestContext, inbound);
+    final var traceId = getTraceId(requestContext);
     if (RequestUtils.loggingEnabled(loggingEnabled, requestId)) {
-      final var inboundMessage = RequestManager.getCurrentMessage();
       RequestEntity message = null;
       try {
         if (inboundMessage != null && inboundMessage.getProcessed() == RequestStatus.PROCESSED) {
@@ -250,5 +150,75 @@ public class InboundMessageFilter implements ContainerRequestFilter, ContainerRe
         RequestUtils.endTransaction();
       }
     }
+
   }
+
+  @SneakyThrows
+  private void handleProcessedMessage(final RequestEntity message) {
+    HashMap<String, String> responseHeaders = new HashMap<>();
+    if (message.getResponseHeaders() != null) {
+      try {
+        responseHeaders = mapper.readValue(message.getResponseHeaders(), new TypeReference<>() {
+        });
+      } catch (final Exception e) {
+        log.error("Unable to parse response headers with value {}.", message.getResponseHeaders());
+      }
+    }
+    final var builder = Response
+        .status(Response.Status.fromStatusCode(message.getResponseStatus()))
+        .entity(message.getResponseBody());
+    responseHeaders.forEach(builder::header);
+    //If message already processed, return
+    throw IOSaveException.error(IOSaveException.ErrorCode.MESSAGE_ALREADY_PROCESSED);
+  }
+
+  private boolean shouldSaveBody() {
+    return customInbound.saveRequestBody();
+  }
+
+  @SneakyThrows
+  private String extractRequestIdFromRequestBody(String requestBody) {
+    return mapper.readValue(requestBody, requestBodyClass).getRequestId();
+  }
+
+  private String getRequestBody(ContainerRequestContext context, RequestEntity requestEntity) {
+    return Objects.isNull(requestEntity) ? readFromRequest(context)
+        : requestEntity.getRequestBody();
+  }
+
+  private static String readFromRequest(ContainerRequestContext request) {
+    final var out = new ByteArrayOutputStream();
+    final var in = request.getEntityStream();
+    byte[] requestEntity = new byte[0];
+    try {
+      if (in.available() > 0) {
+        ReaderWriter.writeTo(in, out);
+        requestEntity = out.toByteArray();
+        request.setEntityStream(
+            new ByteArrayInputStream(requestEntity));  //Write back so that it gets consumed later
+      }
+      return new String(requestEntity);
+    } catch (IOException ex) {
+      throw new ContainerException(ex);
+    }
+  }
+
+  private String getTraceId(final ContainerRequestContext requestContext) {
+    if (null == customInbound.traceId()) {
+      return "TXN-" + UUID.randomUUID();
+    }
+    return requestContext.getHeaderString(customInbound.traceId());
+  }
+
+  @SneakyThrows
+  private String readFromResponse(ContainerResponseContext response) {
+    final var entity = response.getEntity();
+    try {
+      return mapper.writeValueAsString(entity);   //Deserialize anyway
+    } catch (IOSaveException e) {
+      return entity.toString();
+    }
+  }
+
+
 }

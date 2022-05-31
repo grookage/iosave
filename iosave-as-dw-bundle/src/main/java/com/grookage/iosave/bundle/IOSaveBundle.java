@@ -20,6 +20,9 @@ import com.grookage.iosave.as.client.AerospikeClient;
 import com.grookage.iosave.as.config.IOSaveAerospikeConfig;
 import com.grookage.iosave.as.repository.ASRequestRepository;
 import com.grookage.iosave.as.utils.AerospikeClientUtils;
+import com.grookage.iosave.bundle.exception.IOSaveExceptionMapper;
+import com.grookage.iosave.bundle.filters.InboundMessageFilter;
+import com.grookage.iosave.bundle.filters.features.CustomInboundFilterRegistryFeature;
 import io.dropwizard.Configuration;
 import io.dropwizard.ConfiguredBundle;
 import io.dropwizard.setup.Environment;
@@ -44,10 +47,18 @@ public abstract class IOSaveBundle<T extends Configuration> implements Configure
         .mapper(environment.getObjectMapper())
         .build();
     final var messageRepository = new ASRequestRepository(aeroClient);
+    //Register Filters, Features
     environment.jersey().register(InboundMessageFilter.builder()
         .messageRepository(messageRepository)
         .mapper(environment.getObjectMapper())
         .build());
+    environment.jersey().register(CustomInboundFilterRegistryFeature.builder()
+        .mapper(environment.getObjectMapper())
+        .repository(messageRepository)
+        .build());
+    //Register ExceptionMapper
+    environment.jersey().register(new IOSaveExceptionMapper());
+    //Register HealthChecks
     environment.healthChecks().register("iosave-as-health", new HealthCheck() {
       @Override
       protected Result check() {
