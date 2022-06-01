@@ -119,6 +119,14 @@
         <role>developer</role>
       </roles>
     </developer>
+    <developer>
+      <email>grvarora3011@gmail.com</email>
+      <id>d3xt3r-grv</id>
+      <name>Gaurav Arora</name>
+      <roles>
+        <role>developer</role>
+      </roles>
+    </developer>
   </developers>
   <distributionManagement>
     <repository>
