@@ -22,6 +22,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @SuppressWarnings("unused")
+@Getter
 public class IOSaveException extends RuntimeException {
 
   private final ErrorCode errorCode;
@@ -63,7 +64,9 @@ public class IOSaveException extends RuntimeException {
 
     BAD_REQUEST(400),
 
-    DUPLICATE_MESSAGE(417);
+    DUPLICATE_MESSAGE(417),
+
+    INVALID_USE_OF_CUSTOM_INBOUND(412);
 
     int responseCode;
   }
